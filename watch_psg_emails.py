@@ -1,4 +1,4 @@
-# watch_psg_emails.py — script Railway complet avec décodage base64 pour token.json et credentials.json NEEDS REDEPLOY RAILWAY
+# watch_psg_emails.py — script Railway complet avec décodage base64 pour token.json et credentials.json
 
 import os
 import time
@@ -82,8 +82,8 @@ if __name__ == '__main__':
     while True:
         try:
             if check_latest_emails(service):
-                print("✅ Action complète. Le script continue...")
-                continue
+                print("✅ Action complète. Arrêt du script.")
+                break
         except Exception as e:
             print(f"⚠️ Erreur : {e}")
         time.sleep(10)
