@@ -82,8 +82,8 @@ if __name__ == '__main__':
     while True:
         try:
             if check_latest_emails(service):
-                print("✅ Action complète. Arrêt du script.")
-                break
+                print("✅ Action complète. Le script continue...")
+                continue
         except Exception as e:
             print(f"⚠️ Erreur : {e}")
         time.sleep(10)
