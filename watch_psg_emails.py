@@ -1,4 +1,4 @@
-# watch_psg_emails.py — script Railway complet avec décodage base64 pour token.json et credentials.json
+# watch_psg_emails.py — script Railway complet avec décodage base64 pour token.json et credentials.json NEEDS REDEPLOY RAILWAY
 
 import os
 import time
