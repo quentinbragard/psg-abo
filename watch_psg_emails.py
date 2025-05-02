@@ -9,11 +9,13 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from twilio.rest import Client
+import dotenv
+
+dotenv.load_dotenv()    
 
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 KEYWORDS = ['Abonnement', 'Ouverture des ventes']
-#SENDER = 'newsletter@psg.fr'
-SENDER = 'quentin@jayd.ai'
+SENDER = 'newsletter@psg.fr'
 
 # --- Decode credentials.json from base64 ---
 if 'CREDENTIALS_JSON_BASE64' in os.environ:
@@ -57,18 +59,18 @@ def check_latest_emails(service):
         subject = next((h['value'] for h in headers if h['name'] == 'Subject'), '')
         sender = next((h['value'] for h in headers if h['name'] == 'From'), '')
 
-        if any(k in subject for k in KEYWORDS) and SENDER in sender:
+        if any(k in subject for k in KEYWORDS):
             print(f"🎯 Mail détecté : {subject}")
+            send_whatsapp(f"📣 PSG : ouverture détectée !")
             parts = msg_data['payload'].get('parts', [])
             for part in parts:
                 if 'data' in part['body']:
                     decoded_data = base64.urlsafe_b64decode(part['body']['data']).decode('utf-8')
                     soup = BeautifulSoup(decoded_data, 'html.parser')
                     for link in soup.find_all('a', href=True):
-                        if 'billetterie.psg.fr' in link['href']:
+                        if 't.newsletter.psg.fr' in link['href']:
                             url = link['href']
                             print(f"🔗 Lien détecté : {url}")
-
                             send_whatsapp(f"📣 PSG : ouverture détectée ! File d'attente en cours...\n{url}")
                             requests.post(RENDER_WEBHOOK, json={"url": url})
                             return True
