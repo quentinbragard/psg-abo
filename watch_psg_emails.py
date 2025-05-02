@@ -1,5 +1,4 @@
-# 🚨 PSG Watcher Script for Railway
-# Detects Gmail message, notifies via WhatsApp (Twilio), and triggers Render webhook
+# watch_psg_emails.py — script Railway complet avec décodage base64 pour token.json et credentials.json
 
 import os
 import time
@@ -11,29 +10,32 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from twilio.rest import Client
 
-# --- Gmail Setup ---
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 KEYWORDS = ['Abonnement', 'Ouverture des ventes']
-SENDER = 'newsletter@psg.fr'
+#SENDER = 'newsletter@psg.fr'
+SENDER = 'quentin@jayd.ai'
+
+# --- Decode credentials.json from base64 ---
+if 'CREDENTIALS_JSON_BASE64' in os.environ:
+    decoded = base64.b64decode(os.environ['CREDENTIALS_JSON_BASE64']).decode('utf-8')
+    with open('credentials.json', 'w') as f:
+        f.write(decoded)
+
+# --- Decode token.json from base64 ---
+if 'TOKEN_JSON_BASE64' in os.environ:
+    decoded = base64.b64decode(os.environ['TOKEN_JSON_BASE64']).decode('utf-8')
+    with open('token.json', 'w') as f:
+        f.write(decoded)
 
 # --- Twilio Setup ---
 TWILIO_SID = os.environ['TWILIO_SID']
 TWILIO_TOKEN = os.environ['TWILIO_TOKEN']
-TWILIO_FROM = 'whatsapp:+14155238886'  # Twilio sandbox
-TWILIO_TO = 'whatsapp:+33630299726'  # Quentin
-
-# --- Webhook to Render (starts Puppeteer) ---
+TWILIO_FROM = 'whatsapp:+14155238886'
+TWILIO_TO = 'whatsapp:+33630299726'
 RENDER_WEBHOOK = os.environ['RENDER_WEBHOOK_URL']
 
 def get_service():
-    creds = None
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-    else:
-        flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
-        creds = flow.run_local_server(port=0)
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
+    creds = Credentials.from_authorized_user_file('token.json', SCOPES)
     return build('gmail', 'v1', credentials=creds)
 
 def send_whatsapp(body):
@@ -67,7 +69,6 @@ def check_latest_emails(service):
                             url = link['href']
                             print(f"🔗 Lien détecté : {url}")
 
-                            # Envoi WhatsApp + déclenchement webhook
                             send_whatsapp(f"📣 PSG : ouverture détectée ! File d'attente en cours...\n{url}")
                             requests.post(RENDER_WEBHOOK, json={"url": url})
                             return True
