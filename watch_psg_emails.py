@@ -71,7 +71,7 @@ def check_latest_emails(service):
                         if 't.newsletter.psg.fr' in link['href']:
                             url = link['href']
                             print(f"🔗 Lien détecté : {url}")
-                            send_whatsapp(f"📣 PSG : ouverture détectée ! File d'attente en cours...\n{url}")
+                            send_whatsapp(f"🔴🔵🔴🔵🔴🔵 PSG : ouverture détectée ! File d'attente en cours...\n{url}")
                             requests.post(RENDER_WEBHOOK, json={"url": url})
                             return True
     return False
