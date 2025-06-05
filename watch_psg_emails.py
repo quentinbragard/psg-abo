@@ -34,6 +34,7 @@ TWILIO_SID = os.environ['TWILIO_SID']
 TWILIO_TOKEN = os.environ['TWILIO_TOKEN']
 TWILIO_FROM = 'whatsapp:+14155238886'
 TWILIO_TO = 'whatsapp:+33630299726'
+TWILIO_TO_2 = 'whatsapp:+33675463091'
 RENDER_WEBHOOK = os.environ['RENDER_WEBHOOK_URL']
 
 def get_service():
@@ -45,6 +46,11 @@ def send_whatsapp(body):
     message = client.messages.create(
         from_=TWILIO_FROM,
         to=TWILIO_TO,
+        body=body
+    )
+    message_2 = client.messages.create(
+        from_=TWILIO_FROM,
+        to=TWILIO_TO_2,
         body=body
     )
     print("✅ WhatsApp message sent")
